@@ -17,7 +17,7 @@ sobel_y = cv2.convertScaleAbs(sobel_y)  # 转为8位
 blurred = cv2.GaussianBlur(sobel_y, (5, 5), 0)
 canny = cv2.Canny(blurred, 50, 150)
 sobel_y = canny
-cv2.imshow("sobel_y", sobel_y)
+# cv2.imshow("sobel_y", sobel_y.resize())
 
 # 提取多列而不是仅第一列，提高鲁棒性
 columns_to_check = 5  # 检查前5列
@@ -43,7 +43,7 @@ print(f"上边界: {FstNoneZeroPixelIndex}")
 print(f"下边界: {LstNoneZeroPixelIndex}")
 
 # 截取区域
-cropped_img = img[FstNoneZeroPixelIndex:LstNoneZeroPixelIndex, :]
+cropped_img = img[FstNoneZeroPixelIndex+10:LstNoneZeroPixelIndex-10, :]
 
 # 显示结果
 cv2.imshow("Original", img)

@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import os
-from moviepy.editor import VideoFileClip, AudioFileClip
+from moviepy.editor import VideoFileClip
 
 
 class VideoFrameCropper:
@@ -81,15 +81,24 @@ class VideoFrameCropper:
 
         self.process_frame(first_frame)
 
+        # 对裁剪边界进行夹紧并确保至少1像素高度
+        t = max(0, min(int(self.crop_top), height - 2))
+        b = max(t + 1, min(int(self.crop_bottom), height - 1))
+        self.crop_top, self.crop_bottom = t, b
+        out_height = b - t
+        if out_height <= 0:
+            print("错误: 计算得到的裁剪高度无效")
+            cap.release()
+            return False
+
         # 重置视频到第一帧
         cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
 
         # 定义视频编码器和输出
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         out_width = width
-        out_height = self.crop_bottom - self.crop_top
         temp_output_path = "temp_video_no_audio.mp4"
-        out = cv2.VideoWriter(temp_output_path, fourcc, fps, (out_width, out_height))
+        out = cv2.VideoWriter(temp_output_path, fourcc, fps if fps > 0 else 25.0, (out_width, out_height))
 
         # 处理每一帧
         frame_count = 0
@@ -129,7 +138,7 @@ class VideoFrameCropper:
                 output_video_path,
                 codec='libx264',
                 audio_codec='aac',
-                fps=fps
+                fps=fps if fps > 0 else video_clip.fps
             )
 
             # 关闭所有剪辑
@@ -146,23 +155,38 @@ class VideoFrameCropper:
 
         print(f"视频处理完成: {output_video_path}")
         return True
-
+    def get_all_video(self, DirPath, OutputPath="OutPutMovies"):  # 获取指定目录下全部视频文件, 全部输出到指定目录，保留原命名，如果当前视频已经出现在输出目录则跳过
+        video_suffix = ('.mp4', '.avi', '.mov', '.mkv', '.flv', '.wmv')
+        os.makedirs(OutputPath, exist_ok=True)
+        for root, _, files in os.walk(DirPath):
+            for file in files:
+                if file.lower().endswith(video_suffix):
+                    input_video_path = os.path.join(root, file)
+                    output_video_path = os.path.join(OutputPath, file)
+                    if os.path.exists(output_video_path):
+                        print(f"已存在，跳过: {output_video_path}")
+                        continue
+                    print(f"正在处理视频: {input_video_path}")
+                    self.process_video(input_video_path, output_video_path)
 
 def main():
     # 使用示例
     cropper = VideoFrameCropper()
 
-    # 指定输入和输出视频路径
-    input_video = "7409295710242684938.mp4"  # 替换为您的视频路径
-    output_video = "output_video.mp4"  # 替换为您想要的输出路径
-
-    # 处理视频
-    success = cropper.process_video(input_video, output_video)
-
-    if success:
-        print("视频处理成功完成!")
-    else:
-        print("视频处理失败!")
+    # # 指定输入和输出视频路径
+    # input_video = r"C:\Users\Think\Desktop\校验视频\1005-1205\1085-1124\1085-1124视频\7410627601038442534.mp4"  # 替换为您的视频路径
+    # output_video = "output_video.mp4"  # 替换为您想要的输出路径
+    #
+    # # 处理视频
+    # success = cropper.process_video(input_video, output_video)
+    #
+    # if success:
+    #     print("视频处理成功完成!")
+    # else:
+    #     print("视频处理失败!")
+    # 处理指定目录下的所有视频
+    input_directory = r"C:\Users\Think\Desktop\校验视频"  #
+    cropper.get_all_video(DirPath=input_directory)
 
 
 if __name__ == "__main__":

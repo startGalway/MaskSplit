@@ -80,8 +80,8 @@ def compute_row_scores(frames_gray: List[np.ndarray], bg_gray: np.ndarray) -> np
     diffs: list[np.ndarray] = []
     bg_f32 = bg_gray.astype(np.float32)
     for f in frames_gray:
-        d = np.abs(f.astype(np.float32) - bg_f32) / 255.0  # HxW
-        row_mean = d.mean(axis=1)  # H
+        d = np.abs(f.astype(np.float32) - bg_f32) / 255.0  # HxW   对每帧和背景图的每一个像素的差异做归一化
+        row_mean = d.mean(axis=1)  # H   按行求均值
         diffs.append(row_mean)
 
     diffs_stack = np.stack(diffs, axis=0)  # TxH
@@ -309,7 +309,7 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
 
 def main() -> int:
     # 直接运行配置（无需命令行）
-    input_video = r"C:\Users\Think\Desktop\MaskSplit\OutPutMovies\7355409818708869156.mp4"
+    input_video = r"C:\Users\Think\Desktop\校验视频\1-200\1-40\7353976599824302092.mp4"
     output_video = "动态分析裁剪.mp4"
     max_seconds = None
     analyze_only = False

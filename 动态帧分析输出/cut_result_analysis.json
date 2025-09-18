@@ -1,0 +1,13 @@
+{
+  "input": "C:\\Users\\Think\\Desktop\\MaskSplit\\cut_result.mp4",
+  "fps": 30.0,
+  "width": 720,
+  "height": 1254,
+  "num_sampled_frames": 8,
+  "threshold": 0.1,
+  "UpperAreaLowestEdge": -1,
+  "LowerAreaUppestEdge": 1254,
+  "stable_rows_top": [],
+  "stable_rows_bottom": [],
+  "debug_image": "C:\\Users\\Think\\Desktop\\MaskSplit\\动态帧分析输出\\cut_result_debug.png"
+}
